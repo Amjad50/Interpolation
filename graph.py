@@ -7,7 +7,6 @@ class Plotter:
 		matplotlib.use('GTK3Agg')
 		# start interactive mode
 		# FIXME: allow interactivity with pause
-		plt.ion()	
 		plt.cla()
 
 		if callable(setup_callback):

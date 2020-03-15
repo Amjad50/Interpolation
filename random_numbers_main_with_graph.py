@@ -3,7 +3,8 @@ from graph import Plotter, plt
 import numpy as np
 from random import randint
 from fractions import Fraction
-from sys import argv
+
+p = Plotter()
 
 def run(N):
 	a = Interpolator()
@@ -25,8 +26,6 @@ def run(N):
 	print(f"\n\nThe final interpolated function is \n\nf(x) = {a}")
 
 
-	p = Plotter()
-
 	x = np.arange(a.min - 0.1, a.max + 0.1, 0.1)
 	y = []
 	
@@ -38,10 +37,10 @@ def run(N):
 		size = 20
 		print(f'\r{"=" * int(done * size) + "-" * int(still * size)}', flush=True, end=f'{i}/{len(x)}')
 
+	p.clear()
 	plt.ylim(float(np.min(a.y_data)) - 10, float(np.max(a.y_data)) + 10)
 	p.add_line(x, y)
 	p.add_points(a.x_data, a.y_data)
-
 
 	print('\n\n')
 
@@ -51,9 +50,9 @@ while True:
 	except:
 		print("wrong format")
 		continue
-	
+
 	if N == -1:
 		break
-	
 	run(N)
 
+p.show()
