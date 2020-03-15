@@ -11,6 +11,7 @@ class Interpolator:
 	def add(self, x, y):
 		x, y = map(Fraction, (x, y))
 		try:
+			# TODO: x_differences is computed internally in compute(), change that for more efficiency
 			self.c_data.append((y - self.compute(x)) / self.x_differences(x))
 		except:
 			raise ArithmeticError(f"this value of x ({x}) already exists")
@@ -31,15 +32,14 @@ class Interpolator:
 		return res
 
 	def compute(self, x):
-		res = 0
+		res = self.c_data[0] if len(self.c_data) > 0 else 0
 
-		for i in range(len(self.c_data)):
-			sub_res = self.c_data[i]
+		total_sub_x = 1
 
-			for j in range(i):
-				sub_res *= (x - self.x_data[j])
+		for i in range(1, len(self.c_data)):
+			total_sub_x *= (x - self.x_data[i - 1])
 		
-			res += sub_res
+			res += self.c_data[i] * total_sub_x
 
 		return res
 	
