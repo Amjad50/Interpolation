@@ -10,7 +10,10 @@ class Interpolator:
 	
 	def add(self, x, y):
 		x, y = map(Fraction, (x, y))
-		self.c_data.append((y - self.compute(x)) / self.x_differences(x))
+		try:
+			self.c_data.append((y - self.compute(x)) / self.x_differences(x))
+		except:
+			raise ArithmeticError(f"this value of x ({x}) already exists")
 		self.x_data.append(x)
 		self.y_data.append(y)
 
