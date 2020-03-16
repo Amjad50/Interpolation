@@ -38,7 +38,7 @@ class InterpolatorCommandHandler:
 			print(f'[WARN] ignoring value x = {args[-1]} as there is no y value to it')
 
 		for i in range(l // 2):
-			self.cmd_add_point(args[i], args[i + 1])
+			self.cmd_add_point(args[i * 2], args[(i * 2) + 1])
 
 	def cmd_exit(self, *args):
 		return self.BREAK
