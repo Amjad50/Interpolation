@@ -12,6 +12,7 @@ class InterpolatorCommandHandler:
 			'add': (self.cmd_add_point, "Adds x, y value to the interpolation"),
 			'add_points': (self.cmd_add_points, "(add_points [x0] [y0]...[xn] [yn]) Adds many points in one go"),
 			'print': (self.cmd_print, "Print the interpolation function"),
+			'compute': (self.cmd_compute, "Input value x into the function and get the result"),
 			'clear': (self.cmd_clear, "Clears the current interpolation"),
 			'exit': (self.cmd_exit, "Exit from this program"),
 		}
@@ -43,9 +44,6 @@ class InterpolatorCommandHandler:
 	def cmd_exit(self, *args):
 		return self.BREAK
 	
-	def cmd_clear(self, *args):
-		self.interpolator = Interpolator()
-
 	def cmd_print(self, *args):
 		size = self.interpolator.size()
 
@@ -53,6 +51,26 @@ class InterpolatorCommandHandler:
 			print(f'P{self.interpolator.size() - 1}(x) = {self.interpolator}')
 		else:
 			print('[WARN] No data points, nothing to print...')
+
+	def cmd_compute(self, *args):
+		if args:
+			if size := self.interpolator.size():
+				try:
+					x = Fraction(args[0])
+					result = self.interpolator.compute(x)
+					print(f'P{size}({x}) = {result}')
+				except:
+					print(f'[ERROR] Error in evaluating value x = {args[0]}')
+			else:
+				print('[ERROR] there is no data points to build the interpolation function')
+		else:
+			print('[ERROR] no value x specified')
+
+	def cmd_clear(self, *args):
+		self.interpolator = Interpolator()
+
+	def cmd_exit(self, *args):
+		return self.BREAK
 
 	def run_command(self, commandline):
 		command, *args = commandline.split()
