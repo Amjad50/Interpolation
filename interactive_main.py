@@ -80,12 +80,28 @@ class InterpolatorCommandHandler:
 		else:
 			print(f'[ERROR] command "{command}" could not be found')
 
+def welcome_message():
+	print(
+r"""
+Welcome to The
+ ______          __                                  ___             __
+/\__  _\        /\ \__                              /\_ \           /\ \__
+\/_/\ \/     ___\ \ ,_\    __   _ __   _____     ___\//\ \      __  \ \ ,_\   ___   _ __
+   \ \ \   /' _ `\ \ \/  /'__`\/\`'__\/\ '__`\  / __`\\ \ \   /'__`\ \ \ \/  / __`\/\`'__\
+    \_\ \__/\ \/\ \ \ \_/\  __/\ \ \/ \ \ \L\ \/\ \L\ \\_\ \_/\ \L\.\_\ \ \_/\ \L\ \ \ \/
+    /\_____\ \_\ \_\ \__\ \____\\ \_\  \ \ ,__/\ \____//\____\ \__/.\_\\ \__\ \____/\ \_\
+    \/_____/\/_/\/_/\/__/\/____/ \/_/   \ \ \/  \/___/ \/____/\/__/\/_/ \/__/\/___/  \/_/
+                                         \ \_\
+                                          \/_/
+type "help" to access the available commands you can use, enjoy.""")
+
+
 def main():
 	cmd = InterpolatorCommandHandler()
-	# welcome_message()
+	welcome_message()
 
 	while True:
-		command = input('>>> ').strip()
+		command = input('\n>>> ').strip()
 
 		if not command:
 			continue
