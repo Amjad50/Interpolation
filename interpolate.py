@@ -23,6 +23,9 @@ class Interpolator:
 			self.max = x
 		if x < self.min:
 			self.min = x
+	
+	def size(self):
+		return len(self.x_data)
 
 	def __compute(self, x):
 		res = self.c_data[0] if len(self.c_data) > 0 else 0
