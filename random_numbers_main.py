@@ -1,8 +1,11 @@
 from interpolate import Interpolator
 from random import randint
 from fractions import Fraction
+from time import time
 
 def run(N):
+	start = time()
+
 	a = Interpolator()
 
 	x_d = list({Fraction(randint(-200, 200), randint(1, 20)) for _ in range(N)})
@@ -19,7 +22,12 @@ def run(N):
 		size = 20
 		print(f'\r{"=" * int(done * size) + "-" * int(still * size)}', flush=True, end=f'{i}/{len(x_d)}')
 
-	print(f"\n\nThe final interpolated function is \n\nf(x) = {a}")
+	print(f"\n\nThe final interpolated function is \n\nP{len(a.x_data) - 1}(x) = {a}")
+
+	end = time()
+	
+	print()
+	print(f"took {end-start:0.5f} seconds")
 
 
 while True:
