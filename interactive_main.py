@@ -23,7 +23,7 @@ class InterpolatorCommandHandler:
 
 	def cmd_add_point(self, *args):
 		try:
-			x, y = map(Fraction, args[:2])
+			x, y = map(lambda x: Fraction(x.strip()), args[:2])
 			self.interpolator.add(x, y)
 			print(f'[*] added ({x}, {y})')
 		except ArithmeticError:
@@ -56,6 +56,7 @@ class InterpolatorCommandHandler:
 
 	def run_command(self, commandline):
 		command, *args = commandline.split()
+		command = command.strip()
 		if command in self.commands_map:
 			return self.commands_map[command][0](*args)
 		else:
@@ -66,7 +67,7 @@ def main():
 	# welcome_message()
 
 	while True:
-		command = input('>>> ')
+		command = input('>>> ').strip()
 
 		if not command:
 			continue
