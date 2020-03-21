@@ -87,6 +87,7 @@ class InterpolatorCommandHandler:
 			print('[ERROR] There is no value for `ans` yet, you can get a value for `ans` by compute')
 
 	def cmd_clear(self, *args):
+		print('[*] clearing....')
 		self.interpolator = Interpolator()
 		if 'ans' in dir(self):
 			del self.ans
