@@ -75,7 +75,10 @@ class InterpolatorCommandHandler:
 			print('[ERROR] no value x specified')
 
 	def cmd_print_ans(self, *args):
-		print(f'ans = {self.ans}')
+		if 'ans' in dir(self):
+			print(f'ans = {self.ans}')
+		else:
+			print('[ERROR] There is no value for `ans` yet, you can get a value for `ans` by compute')
 
 	def cmd_approx_ans(self, *args):
 		if 'ans' in dir(self):
