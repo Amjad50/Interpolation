@@ -17,10 +17,15 @@ class InterpolatorCommandHandler:
 			'exit': (self.cmd_exit, "Exit from this program"),
 		}
 
+		self.__max_length_cmd = max(map(len, self.commands_map))
+
 		self.interpolator = Interpolator()
 
 	def cmd_help(self, *args):
-		print('\n'.join([f'{k}: {v[1]}' for k, v in self.commands_map.items()]))
+		# this format_string is to set an indentation for the commands and their help message, 
+		# which depend on __max_length_cmd.
+		format_string = '{:' + str(self.__max_length_cmd) + '}\t{}'
+		print('\n'.join([format_string.format(k, v[1]) for k, v in self.commands_map.items()]))
 
 	def cmd_add_point(self, *args):
 		try:
