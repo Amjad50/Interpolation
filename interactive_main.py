@@ -1,5 +1,6 @@
 from interpolate import Interpolator
 from fractions import Fraction
+from time import process_time_ns as time
 
 
 class InterpolatorCommandHandler:
@@ -15,16 +16,22 @@ class InterpolatorCommandHandler:
 			'compute': (self.cmd_compute, "Input value x into the function and get the result"),
 			'ans': (self.cmd_print_ans, "Print the value of `ans` which is the last computed value"),
 			'approx': (self.cmd_approx_ans, "Print the value of `ans` in decimal form (float)"),
+			'set': (self.cmd_set_config, "Sets the value of one of the configuration, (key=value), to see the current config type `set` without parameters"),
 			'clear': (self.cmd_clear, "Clears the current interpolation"),
 			'exit': (self.cmd_exit, "Exit from this program"),
 		}
 
 		self.__max_length_cmd = max(map(len, self.commands_map))
 
+		self.config = {
+			# not the best way to know if the value is false or not, but mah.
+			'show-time': [lambda x: False if x.lower() == 'false' or (len(x) and x.lower()[0] == 'f') else bool(x), False],
+		}
+
 		self.interpolator = Interpolator()
 
 	def cmd_help(self, *args):
-		# this format_string is to set an indentation for the commands and their help message, 
+		# this format_string is to set an indentation for the commands and their help message,
 		# which depend on __max_length_cmd.
 		format_string = '{:' + str(self.__max_length_cmd) + '}\t{}'
 		print('\n'.join([format_string.format(k, v[1]) for k, v in self.commands_map.items()]))
@@ -50,7 +57,7 @@ class InterpolatorCommandHandler:
 
 	def cmd_exit(self, *args):
 		return self.BREAK
-	
+
 	def cmd_print(self, *args):
 		size = self.interpolator.size()
 
@@ -86,6 +93,23 @@ class InterpolatorCommandHandler:
 		else:
 			print('[ERROR] There is no value for `ans` yet, you can get a value for `ans` by compute')
 
+	def cmd_set_config(self, *args):
+		if len(args):
+			try:
+				k, v = (''.join(args)).split('=')
+
+				if k in self.config:
+					self.config[k][1] = self.config[k][0](v)
+					print(f'[*] config `{k}` updated to `{self.config[k][1]}`')
+				else:
+					print(f'[ERROR] key `{k}` was not found in the configuration')
+			except:
+				print('[ERROR] wrong format for setting config values')
+		else:
+			print('\n'.join([f'{k} = {v[1]}' for k, v in self.config.items()]))
+
+
+
 	def cmd_clear(self, *args):
 		print('[*] clearing....')
 		self.interpolator = Interpolator()
@@ -99,7 +123,17 @@ class InterpolatorCommandHandler:
 		command, *args = commandline.split()
 		command = command.strip()
 		if command in self.commands_map:
-			return self.commands_map[command][0](*args)
+			start_t = -1
+			if self.config['show-time'][1]:
+				start_t = time()
+
+			ret_val = self.commands_map[command][0](*args)
+
+			if start_t != -1:
+				end_t = time()
+				print(f'took {(end_t - start_t) / 1000000:.5f} milliseconds')
+
+			return ret_val
 		else:
 			print(f'[ERROR] command "{command}" could not be found')
 
