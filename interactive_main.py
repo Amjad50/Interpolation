@@ -13,6 +13,8 @@ class InterpolatorCommandHandler:
 			'add_points': (self.cmd_add_points, "(add_points [x0] [y0]...[xn] [yn]) Adds many points in one go"),
 			'print': (self.cmd_print, "Print the interpolation function"),
 			'compute': (self.cmd_compute, "Input value x into the function and get the result"),
+			'ans': (self.cmd_print_ans, "Print the value of `ans` which is the last computed value"),
+			'approx': (self.cmd_approx_ans, "Print the value of `ans` in decimal form (float)"),
 			'clear': (self.cmd_clear, "Clears the current interpolation"),
 			'exit': (self.cmd_exit, "Exit from this program"),
 		}
@@ -63,7 +65,8 @@ class InterpolatorCommandHandler:
 				try:
 					x = Fraction(args[0])
 					result = self.interpolator.compute(x)
-					print(f'P{size}({x}) = {result}')
+					self.ans = result
+					print(f'ans = P{size}({x}) = {result}')
 				except:
 					print(f'[ERROR] Error in evaluating value x = {args[0]}')
 			else:
@@ -71,8 +74,19 @@ class InterpolatorCommandHandler:
 		else:
 			print('[ERROR] no value x specified')
 
+	def cmd_print_ans(self, *args):
+		print(f'ans = {self.ans}')
+
+	def cmd_approx_ans(self, *args):
+		if 'ans' in dir(self):
+			print(f'ans = {float(self.ans):.5f}')
+		else:
+			print('[ERROR] There is no value for `ans` yet, you can get a value for `ans` by compute')
+
 	def cmd_clear(self, *args):
 		self.interpolator = Interpolator()
+		if 'ans' in dir(self):
+			del self.ans
 
 	def cmd_exit(self, *args):
 		return self.BREAK
