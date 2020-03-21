@@ -37,7 +37,7 @@ class InterpolatorCommandHandler:
 		except ArithmeticError:
 			print(f'[ERROR] the value of x = {x} already exists')
 		except:
-			print('[ERROR] the input for add_point is not correct')
+			print('[ERROR] the input for add is not correct')
 
 	def cmd_add_points(self, *args):
 		l = len(args)
