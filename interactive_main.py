@@ -93,7 +93,8 @@ Welcome to The
     \/_____/\/_/\/_/\/__/\/____/ \/_/   \ \ \/  \/___/ \/____/\/__/\/_/ \/__/\/___/  \/_/
                                          \ \_\
                                           \/_/
-type "help" to access the available commands you can use, enjoy.""")
+type "help" to access the available commands you can use, enjoy.
+""")
 
 
 def main():
@@ -101,13 +102,14 @@ def main():
 	welcome_message()
 
 	while True:
-		command = input('\n>>> ').strip()
+		command = input('>>> ').strip()
 
 		if not command:
 			continue
 
 		if cmd.run_command(command) == cmd.BREAK:
 			break
+		print()
 
 
 if __name__ == '__main__':
