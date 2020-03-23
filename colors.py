@@ -38,8 +38,10 @@ def __replace_handler(c):
 
 	return RESET
 
-def __format(s):
-	return re.sub(r'((?<!\\)[@#][A-Z]+[@#])|\$|\%', __replace_handler, s)
+def __format(s, is_color = True):
+	handler = __replace_handler if is_color else ''
+
+	return re.sub(r'((?<!\\)[@#][A-Z]+[@#])|\$|\%', handler, s)
 
 """
 @COLOR@		background
@@ -51,4 +53,8 @@ example:
 @YELLOW@#RED#[$#BLUE#*%@YELLOW@#RED#]% added (1, 2)
 """
 def color_print(*args, **kwargs):
-	print(*[__format(i) for i in args], **kwargs)
+	is_color = (not 'color' in kwargs or kwargs['color'])
+	if 'color' in kwargs:
+		del kwargs['color']
+
+	print(*[__format(i, is_color) for i in args], **kwargs)
