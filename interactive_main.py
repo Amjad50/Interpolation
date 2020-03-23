@@ -16,7 +16,7 @@ class InterpolatorCommandHandler:
 			'compute': (self.cmd_compute, "Input value x into the function and get the result"),
 			'ans': (self.cmd_print_ans, "Print the value of `ans` which is the last computed value"),
 			'approx': (self.cmd_approx_ans, "Print the value of `ans` in decimal form (float)"),
-			'set': (self.cmd_set_config, "Sets the value of one of the configuration, (key=value), to see the current config type `set` without parameters"),
+			'config': (self.cmd_set_config, "Sets the value of one of the configuration, (key=value), to see the current config type `set` without parameters"),
 			'clear': (self.cmd_clear, "Clears the current interpolation"),
 			'exit': (self.cmd_exit, "Exit from this program"),
 		}
@@ -129,7 +129,8 @@ class InterpolatorCommandHandler:
 
 			ret_val = self.commands_map[command][0](*args)
 
-			if start_t != -1:
+			# very weird to print the time it takes to exit haha
+			if start_t != -1 and command != 'exit':
 				end_t = time()
 				print(f'took {(end_t - start_t) / 1000000:.5f} milliseconds')
 
