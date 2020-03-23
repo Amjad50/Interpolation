@@ -1,6 +1,7 @@
 from interpolate import Interpolator
 from fractions import Fraction
 from time import process_time_ns as time
+from colors import color_print
 
 
 class InterpolatorCommandHandler:
@@ -28,7 +29,7 @@ class InterpolatorCommandHandler:
 		self.config = {
 			# not the best way to know if the value is false or not, but mah.
 			'show-time': [__set_boolean_helper, False],
-			'show-colors': [__set_boolean_helper, False],
+			'show-colors': [__set_boolean_helper, True],
 		}
 
 		self.interpolator = Interpolator()
@@ -36,24 +37,24 @@ class InterpolatorCommandHandler:
 	def cmd_help(self, *args):
 		# this format_string is to set an indentation for the commands and their help message,
 		# which depend on __max_length_cmd.
-		format_string = '{:' + str(self.__max_length_cmd) + '}\t{}'
-		print('\n'.join([format_string.format(k, v[1]) for k, v in self.commands_map.items()]))
+		format_string = '#MAGENTA#{:' + str(self.__max_length_cmd) + '}\t%#GREEN#{}%'
+		self.__print('\n'.join([format_string.format(k, v[1]) for k, v in self.commands_map.items()]))
 
 	def cmd_add_point(self, *args):
 		try:
 			x, y = map(lambda x: Fraction(x.strip()), args[:2])
 			self.interpolator.add(x, y)
-			print(f'[*] added ({x}, {y})')
+			self.__print(f'$#LIGHTBLUE#[*]% added #GREEN#({x}, {y})%')
 		except ArithmeticError:
-			print(f'[ERROR] the value of x = {x} already exists')
+			self.__print(f'#RED#[ERROR]% the value of #GREEN#x = {x}% already exists')
 		except:
-			print('[ERROR] the input for add is not correct')
+			self.__print('#RED#[ERROR]% the input for #GREEN#add% is not correct')
 
 	def cmd_add_points(self, *args):
 		l = len(args)
 		if l % 2 != 0:
 			l -= 1
-			print(f'[WARN] ignoring value x = {args[-1]} as there is no y value to it')
+			self.__print(f'#YELLOW#[WARN]% ignoring value #GREEN#x = {args[-1]}% as there is no #GREEN#y% value to it')
 
 		for i in range(l // 2):
 			self.cmd_add_point(args[i * 2], args[(i * 2) + 1])
@@ -65,9 +66,9 @@ class InterpolatorCommandHandler:
 		size = self.interpolator.size()
 
 		if size:
-			print(f'P{self.interpolator.size() - 1}(x) = {self.interpolator}')
+			self.__print(f'#LIGHTBLUE#P#GREEN#{self.interpolator.size() - 1}#LIGHTBLUE#(x) =% {self.interpolator}')
 		else:
-			print('[WARN] No data points, nothing to print...')
+			self.__print('#YELLOW#[WARN]% No data points, nothing to print...')
 
 	def cmd_compute(self, *args):
 		if args:
@@ -76,25 +77,25 @@ class InterpolatorCommandHandler:
 					x = Fraction(args[0])
 					result = self.interpolator.compute(x)
 					self.ans = result
-					print(f'ans = P{size}({x}) = {result}')
+					self.__print(f'#MAGENTA#ans =% #LIGHTBLUE#P{size}(#GREEN#{x}%#LIGHTBLUE#) =% {result}')
 				except:
-					print(f'[ERROR] Error in evaluating value x = {args[0]}')
+					self.__print(f'#RED#[ERROR]% Error in evaluating value #GREEN#x = {args[0]}%')
 			else:
-				print('[ERROR] there is no data points to build the interpolation function')
+				self.__print('#RED#[ERROR]% there is no data points to build the interpolation function')
 		else:
-			print('[ERROR] no value x specified')
+			self.__print('#RED#[ERROR]% no value #GREEN#x% specified')
 
 	def cmd_print_ans(self, *args):
 		if 'ans' in dir(self):
-			print(f'ans = {self.ans}')
+			self.__print(f'#MAGENTA#ans =% {self.ans}')
 		else:
-			print('[ERROR] There is no value for `ans` yet, you can get a value for `ans` by compute')
+			self.__print('#RED#[ERROR]% There is no value for #MAGENTA#ans% yet, you can get a value for #MAGENTA#ans% by #GREEN#compute%')
 
 	def cmd_approx_ans(self, *args):
 		if 'ans' in dir(self):
-			print(f'ans = {float(self.ans):.5f}')
+			self.__print(f'#MAGENTA#ans =% {float(self.ans):.5f}')
 		else:
-			print('[ERROR] There is no value for `ans` yet, you can get a value for `ans` by compute')
+			self.__print('#RED#[ERROR]% There is no value for #MAGENTA#ans% yet, you can get a value for #MAGENTA#ans% by #GREEN#compute%')
 
 	def cmd_set_config(self, *args):
 		if len(args):
@@ -103,18 +104,18 @@ class InterpolatorCommandHandler:
 
 				if k in self.config:
 					self.config[k][1] = self.config[k][0](v)
-					print(f'[*] config `{k}` updated to `{self.config[k][1]}`')
+					self.__print(f'$#LIGHTBLUE#[*]% config #GREEN#{k}% updated to #MAGENTA#{self.config[k][1]}%')
 				else:
-					print(f'[ERROR] key `{k}` was not found in the configuration')
+					self.__print(f'#RED#[ERROR]% key #GREEN#{k}% was not found in the configuration')
 			except:
-				print('[ERROR] wrong format for setting config values')
+				self.__print('#RED#[ERROR]% wrong format for setting config values')
 		else:
-			print('\n'.join([f'{k} = {v[1]}' for k, v in self.config.items()]))
+			self.__print('\n'.join([f'#GREEN#{k} = #MAGENTA#{v[1]}%' for k, v in self.config.items()]))
 
 
 
 	def cmd_clear(self, *args):
-		print('[*] clearing....')
+		self.__print('$#LIGHTBLUE#[*] clearing...%')
 		self.interpolator = Interpolator()
 		if 'ans' in dir(self):
 			del self.ans
@@ -135,16 +136,19 @@ class InterpolatorCommandHandler:
 			# very weird to print the time it takes to exit haha
 			if start_t != -1 and command != 'exit':
 				end_t = time()
-				print(f'took {(end_t - start_t) / 1000000:.5f} milliseconds')
+				self.__print(f'\n#LIGHTBLUE#[-] took $#GREEN#{(end_t - start_t) / 1000000:.5f}% #LIGHTBLUE#milliseconds%')
 
 			return ret_val
 		else:
-			print(f'[ERROR] command "{command}" could not be found')
+			self.__print(f'#RED#[ERROR]% command #MAGENTA#{command}% could not be found')
+
+	def __print(self, *args):
+		color_print(*args, color=self.config['show-colors'][1])
 
 def welcome_message():
-	print(
+	color_print(
 r"""
-Welcome to The
+#GREEN#Welcome to The%#LIGHTBLUE#
  ______          __                                  ___             __
 /\__  _\        /\ \__                              /\_ \           /\ \__
 \/_/\ \/     ___\ \ ,_\    __   _ __   _____     ___\//\ \      __  \ \ ,_\   ___   _ __
@@ -154,7 +158,7 @@ Welcome to The
     \/_____/\/_/\/_/\/__/\/____/ \/_/   \ \ \/  \/___/ \/____/\/__/\/_/ \/__/\/___/  \/_/
                                          \ \_\
                                           \/_/
-type "help" to access the available commands you can use, enjoy.
+#GREEN#type #MAGENTA#help#GREEN# to access the available commands you can use, enjoy.%
 """)
 
 
