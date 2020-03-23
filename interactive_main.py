@@ -77,7 +77,7 @@ class InterpolatorCommandHandler:
 					x = Fraction(args[0])
 					result = self.interpolator.compute(x)
 					self.ans = result
-					self.__print(f'#MAGENTA#ans =% #LIGHTBLUE#P{size}(#GREEN#{x}%#LIGHTBLUE#) =% {result}')
+					self.__print(f'#MAGENTA#ans =% #LIGHTBLUE#P{size - 1}(#GREEN#{x}%#LIGHTBLUE#) =% {result}')
 				except:
 					self.__print(f'#RED#[ERROR]% Error in evaluating value #GREEN#x = {args[0]}%')
 			else:
