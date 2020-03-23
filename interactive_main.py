@@ -28,6 +28,7 @@ class InterpolatorCommandHandler:
 		self.config = {
 			# not the best way to know if the value is false or not, but mah.
 			'show-time': [__set_boolean_helper, False],
+			'show-colors': [__set_boolean_helper, False],
 		}
 
 		self.interpolator = Interpolator()
