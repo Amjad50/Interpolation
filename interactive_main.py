@@ -23,9 +23,11 @@ class InterpolatorCommandHandler:
 
 		self.__max_length_cmd = max(map(len, self.commands_map))
 
+		__set_boolean_helper = lambda x: False if x.lower() == 'false' or (len(x) and x.lower()[0] == 'f') else bool(x)
+
 		self.config = {
 			# not the best way to know if the value is false or not, but mah.
-			'show-time': [lambda x: False if x.lower() == 'false' or (len(x) and x.lower()[0] == 'f') else bool(x), False],
+			'show-time': [__set_boolean_helper, False],
 		}
 
 		self.interpolator = Interpolator()
