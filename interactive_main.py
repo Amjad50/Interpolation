@@ -12,7 +12,7 @@ class InterpolatorCommandHandler:
 		self.commands_map = {
 			'help': (self.cmd_help, "Print the help messages and shows the commands that can be used."),
 			'add': (self.cmd_add_point, "Adds x, y value to the interpolation"),
-			'add_points': (self.cmd_add_points, "(add_points [x0] [y0]...[xn] [yn]) Adds many points in one go"),
+			'addall': (self.cmd_add_all, "(addall [x0] [y0]...[xn] [yn]) Adds many points in one go"),
 			'print': (self.cmd_print, "Print the interpolation function"),
 			'compute': (self.cmd_compute, "Input value x into the function and get the result"),
 			'ans': (self.cmd_print_ans, "Print the value of `ans` which is the last computed value"),
@@ -50,7 +50,7 @@ class InterpolatorCommandHandler:
 		except:
 			self.__print('#RED#[ERROR]% the input for #GREEN#add% is not correct')
 
-	def cmd_add_points(self, *args):
+	def cmd_add_all(self, *args):
 		l = len(args)
 		if l % 2 != 0:
 			l -= 1
