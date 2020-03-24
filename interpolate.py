@@ -49,7 +49,12 @@ class Interpolator:
 		res = []
 
 		for i in range(len(self.c_data)):
-			sub_res = str(self.c_data[i])
+			current_c = self.c_data[i]
+
+			if current_c == 0:
+				continue
+
+			sub_res = str(current_c)
 
 			for j in range(i):
 				sub_res += f'(x - {self.x_data[j]})'
