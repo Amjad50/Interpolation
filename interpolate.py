@@ -48,7 +48,9 @@ class Interpolator:
 	def __str__(self):
 		res = []
 
-		for i in range(len(self.c_data)):
+		c_data_len = len(self.c_data)
+
+		for i in range(c_data_len):
 			current_c = self.c_data[i]
 
 			if current_c == 0:
@@ -62,5 +64,9 @@ class Interpolator:
 			res.append(sub_res)
 
 		final =  ' + '.join(res)
+
+		if not final and c_data_len > 0:
+			final = '0'
+
 		return final.replace(' + -', ' - ').replace(' - -', ' + ')
 
