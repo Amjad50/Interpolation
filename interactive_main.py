@@ -13,6 +13,7 @@ class InterpolatorCommandHandler:
 			'help': (self.cmd_help, "Print the help messages and shows the commands that can be used."),
 			'add': (self.cmd_add_point, "Adds x, y value to the interpolation"),
 			'addall': (self.cmd_add_all, "(addall [x0] [y0]...[xn] [yn]) Adds many points in one go"),
+			'addfile': (self.cmd_add_file, "(addall <filename>) Adds many points in one go from the file"),
 			'print': (self.cmd_print, "Print the interpolation function"),
 			'compute': (self.cmd_compute, "Input value x into the function and get the result"),
 			'ans': (self.cmd_print_ans, "Print the value of `ans` which is the last computed value"),
@@ -58,6 +59,25 @@ class InterpolatorCommandHandler:
 
 		for i in range(l // 2):
 			self.cmd_add_point(args[i * 2], args[(i * 2) + 1])
+
+	def cmd_add_file(self, *args):
+		if len(args) < 1:
+			self.__print("#RED#[ERROR]% please provide #MAGENTA#file% to be read from.")
+		else:
+			filename = args[0]
+			try:
+				with open(filename, 'r') as f:
+					for line in f:
+						if line.strip():
+							line_splitted = line.strip().split()
+							if len(line_splitted) < 2:
+								self.__print(f'#YELLOW#[WARN]% ignoring value #GREEN#x = {line_splitted[0]}% as there is no #GREEN#y% value to it')
+							else:
+								self.cmd_add_point(*line_splitted[:2])
+			except PermissionError:
+				self.__print(f"#RED#[ERROR]% The file #GREEN#{filename}% could not be read due to insufficient permissions that the current user have.")
+			except:
+				self.__print(f"#RED#$[PANIC]% unknown error occurred in #MAGENTA#addfile% command, please fix.")
 
 	def cmd_exit(self, *args):
 		return self.BREAK
