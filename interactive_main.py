@@ -14,6 +14,7 @@ class InterpolatorCommandHandler:
 			'add': (self.cmd_add_point, "Adds x, y value to the interpolation"),
 			'addall': (self.cmd_add_all, "(addall [x0] [y0]...[xn] [yn]) Adds many points in one go"),
 			'addfile': (self.cmd_add_file, "(addall <filename>) Adds many points in one go from the file"),
+			'points': (self.cmd_print_points, "print the data points used in the current interpolation"),
 			'print': (self.cmd_print, "Print the interpolation function"),
 			'compute': (self.cmd_compute, "Input value x into the function and get the result"),
 			'ans': (self.cmd_print_ans, "Print the value of `ans` which is the last computed value"),
@@ -78,6 +79,14 @@ class InterpolatorCommandHandler:
 				self.__print(f"#RED#[ERROR]% The file #GREEN#{filename}% could not be read due to insufficient permissions that the current user have.")
 			except:
 				self.__print(f"#RED#$[PANIC]% unknown error occurred in #MAGENTA#addfile% command, please fix.")
+
+	def cmd_print_points(self, *args):
+
+		if self.interpolator.size():
+			for point in zip(self.interpolator.x_data, self.interpolator.y_data):
+				self.__print(f'#LIGHTBLUE#(#GREEN#{point[0]}#LIGHTBLUE#, #GREEN#{point[1]}%#LIGHTBLUE#)%')
+		else:
+			self.__print('#YELLOW#[WARN]% No data points, nothing to print...')
 
 	def cmd_exit(self, *args):
 		return self.BREAK
