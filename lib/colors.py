@@ -1,3 +1,5 @@
+import sys
+
 # BLACK, BLUE, RED, GREEN, YELLOW, LIGHTBLUE, MAGENTA, WHITE = (0, 21, 9, 10, 11, 14, 13, 15)
 
 import re
@@ -38,8 +40,19 @@ def __replace_handler(c):
 
 	return RESET
 
+def supports_color():
+    """
+    Returns True if the running system's terminal supports color, and False
+    otherwise.
+    """
+    plat = sys.platform
+    supported_platform = plat != 'Pocket PC' and (plat != 'win32' or 'ANSICON' in os.environ)
+
+    is_a_tty = hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()
+    return supported_platform and is_a_tty
+
 def __format(s, is_color = True):
-	handler = __replace_handler if is_color else ''
+	handler = __replace_handler if is_color and supports_color() else ''
 
 	return re.sub(r'((?<!\\)[@#][A-Z]+[@#])|\$|\%', handler, s)
 
