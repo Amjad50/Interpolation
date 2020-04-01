@@ -11,7 +11,7 @@ class InterpolatorCommandHandler:
 
 	def __init__(self):
 		self.commands_map = {
-			'help': (self.cmd_help, "Print the help messages and shows the commands that can be used."),
+			'help': (self.cmd_help, "Print the help messages and shows the commands that can be used"),
 			'add': (self.cmd_add_point, "Adds x, y value to the interpolation"),
 			'addall': (self.cmd_add_all, "(addall [x0] [y0]...[xn] [yn]) Adds many points in one go"),
 			'addfile': (self.cmd_add_file, "(addall <filename>) Adds many points in one go from the file"),
