@@ -103,7 +103,8 @@ class InterpolatorCommandHandler:
 
 	def cmd_compute(self, *args):
 		if args:
-			if size := self.interpolator.size():
+			size = self.interpolator.size()
+			if size:
 				try:
 					x = Fraction(args[0])
 					result = self.interpolator.compute(x)
