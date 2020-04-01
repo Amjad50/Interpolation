@@ -41,15 +41,15 @@ def __replace_handler(c):
 	return RESET
 
 def supports_color():
-    """
-    Returns True if the running system's terminal supports color, and False
-    otherwise.
-    """
-    plat = sys.platform
-    supported_platform = plat != 'Pocket PC' and (plat != 'win32' or 'ANSICON' in os.environ)
+	"""
+	Returns True if the running system's terminal supports color, and False
+	otherwise.
+	"""
+	plat = sys.platform
+	supported_platform = plat != 'Pocket PC' and (plat != 'win32' or 'ANSICON' in os.environ)
 
-    is_a_tty = hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()
-    return supported_platform and is_a_tty
+	is_a_tty = hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()
+	return supported_platform and is_a_tty
 
 def __format(s, is_color = True):
 	handler = __replace_handler if is_color and supports_color() else ''

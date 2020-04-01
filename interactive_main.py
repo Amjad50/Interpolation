@@ -1,7 +1,7 @@
 from lib.interpolate import Interpolator
 from fractions import Fraction
 from time import process_time_ns as time
-from lib.colors import color_print
+from lib.colors import color_print, supports_color
 
 
 class InterpolatorCommandHandler:
@@ -28,10 +28,17 @@ class InterpolatorCommandHandler:
 
 		__set_boolean_helper = lambda x: False if x.lower() == 'false' or (len(x) and x.lower()[0] == 'f') else bool(x)
 
+		def __set_show_colors(x):
+			if supports_color():
+				return __set_boolean_helper(x)
+			else:
+				print("[WARN] This terminal does not support coloring, disabling...")
+				return False
+
 		self.config = {
 			# not the best way to know if the value is false or not, but mah.
 			'show-time': [__set_boolean_helper, False],
-			'show-colors': [__set_boolean_helper, True],
+			'show-colors': [__set_show_colors, __set_show_colors('True')],
 		}
 
 		self.interpolator = Interpolator()
