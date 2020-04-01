@@ -77,6 +77,8 @@ class InterpolatorCommandHandler:
 								self.cmd_add_point(*line_splitted[:2])
 			except PermissionError:
 				self.__print(f"#RED#[ERROR]% The file #GREEN#{filename}% could not be read due to insufficient permissions that the current user have.")
+			except FileNotFoundError:
+				self.__print(f"#RED#[ERROR]% The file #GREEN#{filename}% does not exist.")
 			except:
 				self.__print(f"#RED#$[PANIC]% unknown error occurred in #MAGENTA#addfile% command, please fix.")
 
