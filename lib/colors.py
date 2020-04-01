@@ -1,4 +1,4 @@
-import sys
+import sys, os
 
 # BLACK, BLUE, RED, GREEN, YELLOW, LIGHTBLUE, MAGENTA, WHITE = (0, 21, 9, 10, 11, 14, 13, 15)
 
