@@ -2,6 +2,7 @@ from lib.interpolate import Interpolator
 from fractions import Fraction
 from time import process_time_ns as time
 from lib.colors import color_print, supports_color
+from re import sub as re_sub
 
 
 class InterpolatorCommandHandler:
@@ -100,11 +101,29 @@ class InterpolatorCommandHandler:
 	def cmd_exit(self, *args):
 		return self.BREAK
 
+	@staticmethod
+	def _color_interpolation_string_handler(s):
+		s = s.group(0)
+
+		color = ''
+
+		if s == ')' or s =='(':
+			color = 'LIGHTBLUE'
+		elif s == '/' or s == '+' or s == '-':
+			color = 'MAGENTA'
+		else:
+			color = 'GREEN'
+
+		return f'#{color}#{s}%'
+
 	def cmd_print(self, *args):
 		size = self.interpolator.size()
 
 		if size:
-			self.__print(f'#LIGHTBLUE#P#GREEN#{self.interpolator.size() - 1}#LIGHTBLUE#(x) =% {self.interpolator}')
+			interpolation_string = re_sub(r'[0-9]+|[\-\+\/\(\)x]',
+				InterpolatorCommandHandler._color_interpolation_string_handler, str(self.interpolator))
+
+			self.__print(f'#LIGHTBLUE#P#GREEN#{self.interpolator.size() - 1}#LIGHTBLUE#(x) =% {interpolation_string}')
 		else:
 			self.__print('#YELLOW#[WARN]% No data points, nothing to print...')
 
