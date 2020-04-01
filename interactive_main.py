@@ -198,15 +198,30 @@ def main():
 	welcome_message()
 
 	while True:
-		command = input('>>> ').strip()
+		try:
+			command = input('>>> ').strip()
 
-		if not command:
-			continue
+			if not command:
+				continue
 
-		if cmd.run_command(command) == cmd.BREAK:
-			break
-		print()
-
+			if cmd.run_command(command) == cmd.BREAK:
+				break
+			print()
+		except EOFError:
+			print()
+			while True:
+				response = input("Do you want to exit ([y]/n)? ").strip()
+				if not response:
+					exit(0)
+				else:
+					c = response[0].lower()
+					if c == 'y':
+						exit(0)
+					elif c != 'n':
+						continue
+				break
+		except KeyboardInterrupt:
+			print()
 
 if __name__ == '__main__':
 	main()
