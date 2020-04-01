@@ -1,5 +1,5 @@
-from interpolate import Interpolator
-from graph import Plotter, plt
+from lib.interpolate import Interpolator
+from lib.graph import Plotter, plt
 import numpy as np
 from random import randint
 from fractions import Fraction

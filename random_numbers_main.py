@@ -1,4 +1,4 @@
-from interpolate import Interpolator
+from lib.interpolate import Interpolator
 from random import randint
 from fractions import Fraction
 from time import time

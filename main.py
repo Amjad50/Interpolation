@@ -1,4 +1,4 @@
-from interpolate import Interpolator
+from lib.interpolate import Interpolator
 
 a = Interpolator()
 

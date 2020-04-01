@@ -1,7 +1,7 @@
-from interpolate import Interpolator
+from lib.interpolate import Interpolator
 from fractions import Fraction
 from time import process_time_ns as time
-from colors import color_print
+from lib.colors import color_print
 
 
 class InterpolatorCommandHandler:
