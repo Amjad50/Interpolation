@@ -179,11 +179,19 @@ class InterpolatorCommandHandler:
 	def cmd_set_config(self, *args):
 		if len(args):
 			try:
-				k, v = (''.join(args)).split('=')
+				kv = (''.join(args)).split('=')
+				if len(kv) == 1:
+					k = kv[0]
+					v = None
+				else:
+					k, v = kv
 
 				if k in self.config:
-					self.config[k][1] = self.config[k][0](v)
-					self.__print(f'$#LIGHTBLUE#[*]% config #GREEN#{k}% updated to #MAGENTA#{self.config[k][1]}%')
+					if v != None:
+						self.config[k][1] = self.config[k][0](v)
+						self.__print(f'$#LIGHTBLUE#[*]% config #GREEN#{k}% updated to #MAGENTA#{self.config[k][1]}%')
+					else:
+						self.__print(f'#GREEN#{k} = #MAGENTA#{self.config[k][1]}%')
 				else:
 					self.__print(f'#RED#[ERROR]% key #GREEN#{k}% was not found in the configuration')
 			except:
