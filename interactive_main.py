@@ -51,13 +51,17 @@ class InterpolatorCommandHandler:
 		self.interpolator = Interpolator()
 
 	def command_completer(self, text, state):
-		possible_cmds = [c for c in self.commands_map.keys() if c.startswith(text)]
-		possible_cmds.append(None)
-
+		start = readline.get_begidx()
 		# if this is in the start, it means it is a command, otherwise the user
 		# should supply the input arguments to the command
-		if readline.get_begidx() == 0:
+		if start == 0:
+			possible_cmds = [c for c in self.commands_map.keys() if c.startswith(text)]
+			possible_cmds.append(None)
 			return possible_cmds[state]
+		elif readline.get_line_buffer().startswith('config') and start == len('config '):
+			possible_configs = [c for c in self.config if c.startswith(text)]
+			possible_configs.append(None)
+			return possible_configs[state]
 
 		return None
 
@@ -244,6 +248,7 @@ def main():
 	if not readline_does_not_exist:
 		readline.parse_and_bind('tab: complete')
 		readline.set_completer(cmd.command_completer)
+		readline.set_completer_delims(' \t\n')
 
 	while True:
 		try:
