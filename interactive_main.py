@@ -3,8 +3,12 @@ from fractions import Fraction
 from time import process_time_ns as time
 from lib.colors import color_print, supports_color
 from re import sub as re_sub
-import readline
 
+try:
+	import readline
+	readline_does_not_exist = False
+except ImportError:
+	readline_does_not_exist = True
 
 class InterpolatorCommandHandler:
 	# run_command values
@@ -236,8 +240,9 @@ def main():
 	cmd = InterpolatorCommandHandler()
 	welcome_message()
 
-	readline.parse_and_bind('tab: complete')
-	readline.set_completer(cmd.command_completer)
+	if not readline_does_not_exist:
+		readline.parse_and_bind('tab: complete')
+		readline.set_completer(cmd.command_completer)
 
 	while True:
 		try:
