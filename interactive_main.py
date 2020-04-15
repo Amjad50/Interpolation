@@ -9,6 +9,7 @@ try:
 	readline_does_not_exist = False
 except ImportError:
 	readline_does_not_exist = True
+	color_print("#YELLOW#[WARN]% This system does not support auto completion and history functionality, as it does not have readline library.")
 
 class InterpolatorCommandHandler:
 	# run_command values
