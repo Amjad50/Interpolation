@@ -3,6 +3,7 @@ from fractions import Fraction
 from time import process_time_ns as time
 from lib.colors import color_print, supports_color
 from re import sub as re_sub
+import readline
 
 
 class InterpolatorCommandHandler:
@@ -43,6 +44,17 @@ class InterpolatorCommandHandler:
 		}
 
 		self.interpolator = Interpolator()
+
+	def command_completer(self, text, state):
+		possible_cmds = [c for c in self.commands_map.keys() if c.startswith(text)]
+		possible_cmds.append(None)
+
+		# if this is in the start, it means it is a command, otherwise the user
+		# should supply the input arguments to the command
+		if readline.get_begidx() == 0:
+			return possible_cmds[state]
+
+		return None
 
 	def cmd_help(self, *args):
 		# this format_string is to set an indentation for the commands and their help message,
@@ -223,6 +235,9 @@ r"""
 def main():
 	cmd = InterpolatorCommandHandler()
 	welcome_message()
+
+	readline.parse_and_bind('tab: complete')
+	readline.set_completer(cmd.command_completer)
 
 	while True:
 		try:
