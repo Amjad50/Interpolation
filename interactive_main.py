@@ -6,9 +6,7 @@ from re import sub as re_sub
 
 try:
 	import readline
-	readline_does_not_exist = False
 except ImportError:
-	readline_does_not_exist = True
 	color_print("#YELLOW#[WARN]% This system does not support auto completion and history functionality, as it does not have readline library.")
 
 class InterpolatorCommandHandler:
@@ -253,7 +251,7 @@ def main():
 	cmd = InterpolatorCommandHandler()
 	welcome_message()
 
-	if not readline_does_not_exist:
+	if readline:
 		readline.parse_and_bind('tab: complete')
 		readline.set_completer(cmd.command_completer)
 		readline.set_completer_delims(' \t\n')
