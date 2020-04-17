@@ -3,14 +3,13 @@ from fractions import Fraction
 from time import process_time_ns as time
 from lib.colors import color_print, supports_color
 from re import sub as re_sub
-
 try:
 	import readline
 except ImportError:
 	color_print("#YELLOW#[WARN]% This system does not support auto completion and history functionality, as it does not have readline library.")
 
 class InterpolatorCommandHandler:
-	# run_command values
+	# some constant value to know if the main should stop its loop
 	BREAK = 129
 
 	def __init__(self):
@@ -49,6 +48,9 @@ class InterpolatorCommandHandler:
 		self.interpolator = Interpolator()
 
 	def command_completer(self, text, state):
+		"""
+		This is used by the readline library to implement auto-completion
+		"""
 		start = readline.get_begidx()
 		# if this is in the start, it means it is a command, otherwise the user
 		# should supply the input arguments to the command
@@ -96,8 +98,9 @@ class InterpolatorCommandHandler:
 			try:
 				with open(filename, 'r') as f:
 					for line in f:
-						if line.strip():
-							line_splitted = line.strip().split()
+						stripped_line = line.strip()
+						if stripped_line:
+							line_splitted = stripped_line.split()
 							if len(line_splitted) < 2:
 								self.__print(f'#YELLOW#[WARN]% ignoring value #GREEN#x = {line_splitted[0]}% as there is no #GREEN#y% value to it')
 							else:
@@ -110,15 +113,11 @@ class InterpolatorCommandHandler:
 				self.__print(f"#RED#$[PANIC]% unknown error occurred in #MAGENTA#addfile% command, please fix.")
 
 	def cmd_print_points(self, *args):
-
 		if self.interpolator.size():
 			for point in zip(self.interpolator.x_data, self.interpolator.y_data):
 				self.__print(f'#LIGHTBLUE#(#GREEN#{point[0]}#LIGHTBLUE#, #GREEN#{point[1]}%#LIGHTBLUE#)%')
 		else:
 			self.__print('#YELLOW#[WARN]% No data points, nothing to print...')
-
-	def cmd_exit(self, *args):
-		return self.BREAK
 
 	@staticmethod
 	def _color_interpolation_string_handler(s):
@@ -197,8 +196,6 @@ class InterpolatorCommandHandler:
 		else:
 			self.__print('\n'.join([f'#GREEN#{k} = #MAGENTA#{v[1]}%' for k, v in self.config.items()]))
 
-
-
 	def cmd_clear(self, *args):
 		self.__print('$#LIGHTBLUE#[*] clearing...%')
 		self.interpolator = Interpolator()
@@ -245,7 +242,6 @@ r"""
                                           \/_/
 #GREEN#type #MAGENTA#help#GREEN# to access the available commands you can use, enjoy.%
 """)
-
 
 def main():
 	cmd = InterpolatorCommandHandler()
