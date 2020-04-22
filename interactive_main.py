@@ -17,7 +17,8 @@ class InterpolatorCommandHandler:
 			'help': (self.cmd_help, "Print the help messages and shows the commands that can be used"),
 			'add': (self.cmd_add_point, "Adds x, y value to the interpolation"),
 			'addall': (self.cmd_add_all, "(addall [x0] [y0]...[xn] [yn]) Adds many points in one go"),
-			'addfile': (self.cmd_add_file, "(addall <filename>) Adds many points in one go from the file"),
+			'addfile': (self.cmd_add_file, "(addfile <filename>) Adds many points in one go from the file"),
+			'savefile': (self.cmd_save_file, "(savefile <filename>) saves the current points stored in the interpolator to a file"),
 			'points': (self.cmd_print_points, "print the data points used in the current interpolation"),
 			'print': (self.cmd_print, "Print the interpolation function"),
 			'compute': (self.cmd_compute, "Input value x into the function and get the result"),
@@ -111,6 +112,26 @@ class InterpolatorCommandHandler:
 				self.__print(f"#RED#[ERROR]% The file #GREEN#{filename}% does not exist.")
 			except:
 				self.__print(f"#RED#$[PANIC]% unknown error occurred in #MAGENTA#addfile% command, please fix.")
+
+	def cmd_save_file(self, *args):
+		if len(args) < 1:
+			self.__print("#RED#[ERROR]% please provide #MAGENTA#file% to be saved to.")
+		else:
+			if self.interpolator.size():
+				filename = args[0]
+				try:
+					with open(filename, 'w') as f:
+						for point in zip(self.interpolator.x_data, self.interpolator.y_data):
+							print(f'{point[0]} {point[1]}', file=f)
+
+					self.__print(f'$#LIGHTBLUE#[*]% points saved to #MAGENTA#{filename}% successfully')
+
+				except PermissionError:
+					self.__print(f"#RED#[ERROR]% The file #GREEN#{filename}% could not be written to due to insufficient permissions that the current user have.")
+				except:
+					self.__print(f"#RED#$[PANIC]% unknown error occurred in #MAGENTA#addfile% command, please fix.")
+			else:
+				self.__print('#YELLOW#[WARN]% No data points, nothing to print...')
 
 	def cmd_print_points(self, *args):
 		if self.interpolator.size():
