@@ -1,6 +1,6 @@
 from lib.interpolate import Interpolator
 
-a = Interpolator()
+a = Interpolator(Interpolator.MODES[1])
 
 points = [(1, 3), (1/2, -10), (3, 2), (5, 3/2), (7, 1)]
 
