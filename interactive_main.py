@@ -1,7 +1,7 @@
 from lib.interpolate import Interpolator
 from fractions import Fraction
 from time import process_time_ns as time
-from lib.colors import color_print, supports_color
+from lib.colors import color_format, color_print, supports_color
 from re import sub as re_sub
 try:
 	import readline
@@ -43,7 +43,7 @@ class InterpolatorCommandHandler:
 		def __set_prompt(x):
 			if len(x) >= 2 and (x[0] in '\'"' and x[-1] == x[0]):
 				x = x[1:-1]
-			return x
+			return x + '%' # reset the colors if the user didn't do it
 
 		self.config = {
 			# not the best way to know if the value is false or not, but mah.
@@ -308,7 +308,7 @@ def main():
 
 	while True:
 		try:
-			command = input(cmd.get_prompt()).strip()
+			command = input(color_format(cmd.get_prompt())).strip()
 
 			if not command:
 				continue

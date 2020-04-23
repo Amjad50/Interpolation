@@ -51,7 +51,7 @@ def supports_color():
 	is_a_tty = hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()
 	return supported_platform and is_a_tty
 
-def __format(s, is_color = True):
+def color_format(s, is_color = True):
 	handler = __replace_handler if is_color and supports_color() else ''
 
 	return re.sub(r'((?<!\\)[@#][A-Z]+[@#])|\$|\%', handler, s)
@@ -70,4 +70,5 @@ def color_print(*args, **kwargs):
 	if 'color' in kwargs:
 		del kwargs['color']
 
-	print(*[__format(i, is_color) for i in args], **kwargs)
+	print(*[color_format(i, is_color) for i in args], **kwargs)
+
