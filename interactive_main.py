@@ -40,10 +40,16 @@ class InterpolatorCommandHandler:
 				print("[WARN] This terminal does not support coloring, disabling...")
 				return False
 
+		def __set_prompt(x):
+			if len(x) >= 2 and (x[0] in '\'"' and x[-1] == x[0]):
+				x = x[1:-1]
+			return x
+
 		self.config = {
 			# not the best way to know if the value is false or not, but mah.
 			'show-time': [__set_boolean_helper, False],
 			'show-colors': [__set_show_colors, __set_show_colors('True')],
+			'prompt': [__set_prompt, '>>>'],
 		}
 
 		self.interpolator = Interpolator()
@@ -231,7 +237,7 @@ class InterpolatorCommandHandler:
 			except:
 				self.__print('#RED#[ERROR]% wrong format for setting config values')
 		else:
-			self.__print('\n'.join([f'#GREEN#{k} = #MAGENTA#{v[1]}%' for k, v in self.config.items()]))
+			self.__print('\n'.join([f'#GREEN#{k} = #MAGENTA#{repr(v[1])}%' for k, v in self.config.items()]))
 
 	def cmd_clear(self, *args):
 		self.__print('$#LIGHTBLUE#[*] clearing...%')
@@ -269,6 +275,9 @@ class InterpolatorCommandHandler:
 			possible_commands_string = '\n\t'.join(possible_commands)
 			self.__print(f'#YELLOW#[WARN]% do you mean\n\n\t{possible_commands_string}')
 
+	def get_prompt(self):
+		return self.config['prompt'][1] + ' '
+
 	def __print(self, *args):
 		color_print(*args, color=self.config['show-colors'][1])
 
@@ -299,7 +308,7 @@ def main():
 
 	while True:
 		try:
-			command = input('>>> ').strip()
+			command = input(cmd.get_prompt()).strip()
 
 			if not command:
 				continue
