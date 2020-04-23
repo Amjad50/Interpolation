@@ -23,7 +23,7 @@ class InterpolatorCommandHandler:
 			'print': (self.cmd_print, "Print the interpolation function"),
 			'compute': (self.cmd_compute, "Input value x into the function and get the result"),
 			'ans': (self.cmd_print_ans, "Print the value of `ans` which is the last computed value"),
-			'approx': (self.cmd_approx_ans, "Print the value of `ans` in decimal form (float)"),
+			'approx': (self.cmd_approx_ans, "Print the value of `ans` in decimal form (float) or compute a new value if specified as argument"),
 			'config': (self.cmd_set_config, "Sets the value of one of the configuration, (key=value), to see the current config type `set` without parameters"),
 			'clear': (self.cmd_clear, "Clears the current interpolation"),
 			'exit': (self.cmd_exit, "Exit from this program"),
@@ -169,19 +169,26 @@ class InterpolatorCommandHandler:
 		else:
 			self.__print('#YELLOW#[WARN]% No data points, nothing to print...')
 
+	def __inner_compute(self, x):
+		size = self.interpolator.size()
+		if size:
+			try:
+				x = Fraction(x)
+				result = self.interpolator.compute(x)
+				self.ans = result
+				return x, result
+			except:
+				self.__print(f'#RED#[ERROR]% Error in evaluating value #GREEN#x = {args[0]}%')
+				return None, None
+		else:
+			self.__print('#RED#[ERROR]% there is no data points to build the interpolation function')
+
 	def cmd_compute(self, *args):
+		size = self.interpolator.size()
 		if args:
-			size = self.interpolator.size()
-			if size:
-				try:
-					x = Fraction(args[0])
-					result = self.interpolator.compute(x)
-					self.ans = result
-					self.__print(f'#MAGENTA#ans =% #LIGHTBLUE#P{size - 1}(#GREEN#{x}%#LIGHTBLUE#) =% {result}')
-				except:
-					self.__print(f'#RED#[ERROR]% Error in evaluating value #GREEN#x = {args[0]}%')
-			else:
-				self.__print('#RED#[ERROR]% there is no data points to build the interpolation function')
+			x, result = self.__inner_compute(args[0])
+			if x and result:
+				self.__print(f'#MAGENTA#ans =% #LIGHTBLUE#P{size - 1}(#GREEN#{x}%#LIGHTBLUE#) =% {result}')
 		else:
 			self.__print('#RED#[ERROR]% no value #GREEN#x% specified')
 
@@ -192,10 +199,16 @@ class InterpolatorCommandHandler:
 			self.__print('#RED#[ERROR]% There is no value for #MAGENTA#ans% yet, you can get a value for #MAGENTA#ans% by #GREEN#compute%')
 
 	def cmd_approx_ans(self, *args):
-		if 'ans' in dir(self):
-			self.__print(f'#MAGENTA#ans =% {float(self.ans):.5f}')
+		size = self.interpolator.size()
+		if args:
+			x, result = self.__inner_compute(args[0])
+			if x and result:
+				self.__print(f'#MAGENTA#ans =% #LIGHTBLUE#P{size - 1}(#GREEN#{x}%#LIGHTBLUE#) =% {float(result):.5f}')
 		else:
-			self.__print('#RED#[ERROR]% There is no value for #MAGENTA#ans% yet, you can get a value for #MAGENTA#ans% by #GREEN#compute%')
+			if 'ans' in dir(self):
+				self.__print(f'#MAGENTA#ans =% {float(self.ans):.5f}')
+			else:
+				self.__print('#RED#[ERROR]% There is no value for #MAGENTA#ans% yet, you can get a value for #MAGENTA#ans% by #GREEN#compute%')
 
 	def cmd_set_config(self, *args):
 		if len(args):
