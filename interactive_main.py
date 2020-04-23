@@ -3,6 +3,7 @@ from fractions import Fraction
 from time import process_time_ns as time
 from lib.colors import color_format, color_print, supports_color
 from re import sub as re_sub
+from subprocess import call as call_system_cmd
 try:
 	import readline
 except ImportError:
@@ -311,6 +312,12 @@ def main():
 			command = input(color_format(cmd.get_prompt())).strip()
 
 			if not command:
+				continue
+
+			command = command.lstrip()
+
+			if command[0] == '!':
+				call_system_cmd(command[1:], shell=True)
 				continue
 
 			if cmd.run_command(command) == cmd.BREAK:
