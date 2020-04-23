@@ -48,6 +48,9 @@ class InterpolatorCommandHandler:
 
 		self.interpolator = Interpolator()
 
+	def get_matched_commands(self, text):
+		return [c for c in self.commands_map.keys() if c.startswith(text)]
+
 	def command_completer(self, text, state):
 		"""
 		This is used by the readline library to implement auto-completion
@@ -56,7 +59,7 @@ class InterpolatorCommandHandler:
 		# if this is in the start, it means it is a command, otherwise the user
 		# should supply the input arguments to the command
 		if start == 0:
-			possible_cmds = [c for c in self.commands_map.keys() if c.startswith(text)]
+			possible_cmds = self.get_matched_commands(text)
 			possible_cmds.append(None)
 			return possible_cmds[state]
 		elif readline.get_line_buffer().startswith('config') and start == len('config '):
@@ -229,7 +232,12 @@ class InterpolatorCommandHandler:
 	def run_command(self, commandline):
 		command, *args = commandline.split()
 		command = command.strip()
-		if command in self.commands_map:
+
+		possible_commands = self.get_matched_commands(command)
+
+		if len(possible_commands) == 1 or command in self.commands_map:
+			command = possible_commands[0]
+
 			start_t = -1
 			if self.config['show-time'][1]:
 				start_t = time()
@@ -242,8 +250,11 @@ class InterpolatorCommandHandler:
 				self.__print(f'\n#LIGHTBLUE#[-] took $#GREEN#{(end_t - start_t) / 1000000:.5f}% #LIGHTBLUE#milliseconds%')
 
 			return ret_val
-		else:
+		elif len(possible_commands) == 0:
 			self.__print(f'#RED#[ERROR]% command #MAGENTA#{command}% could not be found')
+		else:
+			possible_commands_string = '\n\t'.join(possible_commands)
+			self.__print(f'#YELLOW#[WARN]% do you mean\n\n\t{possible_commands_string}')
 
 	def __print(self, *args):
 		color_print(*args, color=self.config['show-colors'][1])
