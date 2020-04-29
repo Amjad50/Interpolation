@@ -24,7 +24,7 @@ class InterpolatorCommandHandler:
 			'points': (self.cmd_print_points, "print the data points used in the current interpolation"),
 			'print': (self.cmd_print, "Print the interpolation function"),
 			'compute': (self.cmd_compute, "Input value x into the function and get the result"),
-			'compute_location': (self.cmd_compute_location, "get the value of x at a relative location to the other points and compute its value from the interpolation"),
+			'comploc': (self.cmd_compute_location, "(compute_location) get the value of x at a relative location to the other points and compute its value from the interpolation"),
 			'ans': (self.cmd_print_ans, "Print the value of `ans` which is the last computed value"),
 			'approx': (self.cmd_approx_ans, "Print the value of `ans` in decimal form (float) or compute a new value if specified as argument"),
 			'config': (self.cmd_set_config, "Sets the value of one of the configuration, (key=value), to see the current config type `set` without parameters"),
