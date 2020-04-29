@@ -189,6 +189,7 @@ class InterpolatorCommandHandler:
 				return None, None
 		else:
 			self.__print('#RED#[ERROR]% there is no data points to build the interpolation function')
+			return None, None
 
 	def cmd_compute(self, *args):
 		size = self.interpolator.size()
