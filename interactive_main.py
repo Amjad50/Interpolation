@@ -4,6 +4,7 @@ from time import process_time_ns as time
 from lib.colors import color_format, color_print, supports_color
 from re import sub as re_sub
 from subprocess import call as call_system_cmd
+from math import ceil, floor
 try:
 	import readline
 except ImportError:
@@ -23,6 +24,7 @@ class InterpolatorCommandHandler:
 			'points': (self.cmd_print_points, "print the data points used in the current interpolation"),
 			'print': (self.cmd_print, "Print the interpolation function"),
 			'compute': (self.cmd_compute, "Input value x into the function and get the result"),
+			'compute_location': (self.cmd_compute_location, "get the value of x at a relative location to the other points and compute its value from the interpolation"),
 			'ans': (self.cmd_print_ans, "Print the value of `ans` which is the last computed value"),
 			'approx': (self.cmd_approx_ans, "Print the value of `ans` in decimal form (float) or compute a new value if specified as argument"),
 			'config': (self.cmd_set_config, "Sets the value of one of the configuration, (key=value), to see the current config type `set` without parameters"),
@@ -197,6 +199,34 @@ class InterpolatorCommandHandler:
 			x, result = self.__inner_compute(args[0])
 			if x and result:
 				self.__print(f'#MAGENTA#ans =% #LIGHTBLUE#P{size - 1}(#GREEN#{x}%#LIGHTBLUE#) =% {result}')
+		else:
+			self.__print('#RED#[ERROR]% no value #GREEN#x% specified')
+
+	def cmd_compute_location(self, *args):
+		size = self.interpolator.size()
+		if args:
+			try:
+				inp = Fraction(args[0])
+				if inp < size and inp >= 0:
+					x_points = self.interpolator.x_data
+					# get the difference between the index before this and after this if it is in the middle
+					# if its a whole number, ceil and floor would result to the same thing.
+					difference = x_points[ceil(inp)] - x_points[floor(inp)]
+
+					# get the distance from the index before this and multiply it to the difference before, to know
+					# how much we should offset from it.
+					# (inp - floor(inp) is used to get the fraction part of the number only
+					offset = difference * (inp - floor(inp))
+
+					x = x_points[floor(inp)] + offset
+
+					x, result = self.__inner_compute(x)
+					if x and result:
+						self.__print(f'#MAGENTA#ans =% #LIGHTBLUE#P{size - 1}(#GREEN#{x}%#LIGHTBLUE#) =% {result}')
+				else:
+					self.__print(f'#RED#[ERROR]% the value location #GREEN#{inp}% you are trying to compute does not exist')
+			except:
+				self.__print(f'#RED#[ERROR]% Error in evaluating value #GREEN#x = {args[0]}%')
 		else:
 			self.__print('#RED#[ERROR]% no value #GREEN#x% specified')
 
