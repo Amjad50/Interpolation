@@ -35,7 +35,7 @@ class InterpolatorCommandHandler:
             'comploc': (self.cmd_compute_location,
                         "(compute_location) get the value of x at a relative location to the other points and compute its value from the interpolation"),
             'ans': (self.cmd_print_ans, "Print the value of `ans` which is the last computed value"),
-            'approx': (self.cmd_approx_ans,
+            'approx': (self.cmd_approx,
                        "Print the value of `ans` in decimal form (float) or compute a new value if specified as argument"),
             'config': (self.cmd_set_config,
                        "Sets the value of one of the configuration, (key=value), to see the current config type `set` without parameters"),
@@ -281,9 +281,8 @@ class InterpolatorCommandHandler:
             self.__print(
                 '#RED#[ERROR]% There is no value for #MAGENTA#ans% yet, you can get a value for #MAGENTA#ans% by #GREEN#compute%')
 
-    def cmd_approx_ans(self, *args):
+    def cmd_approx(self, *args):
         # TODO: add a precision change config
-        # TODO: change this function's name as it can compute by itself now
         size = self.interpolator.size()
         if args:
             x, result = self.__inner_compute(args[0])
