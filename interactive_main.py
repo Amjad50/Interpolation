@@ -10,6 +10,7 @@ try:
 except ImportError:
 	color_print("#YELLOW#[WARN]% This system does not support auto completion and history functionality, as it does not have readline library.")
 
+
 class InterpolatorCommandHandler:
 	# some constant value to know if the main should stop its loop
 	BREAK = 129
@@ -34,7 +35,8 @@ class InterpolatorCommandHandler:
 
 		self.__max_length_cmd = max(map(len, self.commands_map))
 
-		__set_boolean_helper = lambda x: False if x.lower() == 'false' or (len(x) and x.lower()[0] == 'f') else bool(x)
+		def __set_boolean_helper(x):
+			return False if x.lower() == 'false' or (len(x) and x.lower()[0] == 'f') else bool(x)
 
 		def __set_show_colors(x):
 			if supports_color():
@@ -91,7 +93,7 @@ class InterpolatorCommandHandler:
 			self.__print(f'$#LIGHTBLUE#[*]% added #GREEN#({x}, {y})%')
 		except ArithmeticError:
 			self.__print(f'#RED#[ERROR]% the value of #GREEN#x = {x}% already exists')
-		except:
+		except ValueError:
 			self.__print('#RED#[ERROR]% the input for #GREEN#add% is not correct')
 
 	def cmd_add_all(self, *args):
@@ -158,7 +160,7 @@ class InterpolatorCommandHandler:
 
 		color = ''
 
-		if s == ')' or s =='(':
+		if s == ')' or s == '(':
 			color = 'LIGHTBLUE'
 		elif s == '/' or s == '+' or s == '-':
 			color = 'MAGENTA'
@@ -186,7 +188,7 @@ class InterpolatorCommandHandler:
 				result = self.interpolator.compute(x)
 				self.ans = result
 				return x, result
-			except:
+			except ValueError:
 				self.__print(f'#RED#[ERROR]% Error in evaluating value #GREEN#x = {x}%')
 				return None, None
 		else:
@@ -207,7 +209,7 @@ class InterpolatorCommandHandler:
 		if args:
 			try:
 				inp = Fraction(args[0])
-				if inp < size and inp >= 0:
+				if size > inp >= 0:
 					x_points = self.interpolator.x_data
 					# get the difference between the index before this and after this if it is in the middle
 					# if its a whole number, ceil and floor would result to the same thing.
@@ -225,7 +227,7 @@ class InterpolatorCommandHandler:
 						self.__print(f'#MAGENTA#ans =% #LIGHTBLUE#P{size - 1}(#GREEN#{x}%#LIGHTBLUE#) =% {result}')
 				else:
 					self.__print(f'#RED#[ERROR]% the value location #GREEN#{inp}% you are trying to compute does not exist')
-			except:
+			except ValueError:
 				self.__print(f'#RED#[ERROR]% Error in evaluating value #GREEN#x = {args[0]}%')
 		else:
 			self.__print('#RED#[ERROR]% no value #GREEN#x% specified')
@@ -259,7 +261,7 @@ class InterpolatorCommandHandler:
 					k, v = kv
 
 				if k in self.config:
-					if v != None:
+					if v is not None:
 						self.config[k][1] = self.config[k][0](v)
 						self.__print(f'$#LIGHTBLUE#[*]% config #GREEN#{k}% updated to #MAGENTA#{self.config[k][1]}%')
 					else:
@@ -308,14 +310,14 @@ class InterpolatorCommandHandler:
 			self.__print(f'#YELLOW#[WARN]% do you mean\n\n\t{possible_commands_string}')
 
 	def get_prompt(self):
-		return self.config['prompt'][1] + ' '
+		return f"{self.config['prompt'][1]} "
 
 	def __print(self, *args):
 		color_print(*args, color=self.config['show-colors'][1])
 
+
 def welcome_message():
-	color_print(
-r"""
+	color_print(r"""
 #GREEN#Welcome to The%#LIGHTBLUE#
  ______          __                                  ___             __
 /\__  _\        /\ \__                              /\_ \           /\ \__
@@ -328,6 +330,7 @@ r"""
                                           \/_/
 #GREEN#type #MAGENTA#help#GREEN# to access the available commands you can use, enjoy.%
 """)
+
 
 def main():
 	cmd = InterpolatorCommandHandler()
@@ -369,6 +372,7 @@ def main():
 				break
 		except KeyboardInterrupt:
 			print()
+
 
 if __name__ == '__main__':
 	main()
