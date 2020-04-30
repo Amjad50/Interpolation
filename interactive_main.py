@@ -177,29 +177,6 @@ class InterpolatorCommandHandler:
         else:
             self.__print('#YELLOW#[WARN]% No data points, nothing to print...')
 
-    @staticmethod
-    def _color_interpolation_string_handler(s):
-        """
-
-        :param s: interpolation string regex match
-        :type s: Match
-        :return: colored interpolation string
-        :rtype: str
-        """
-        s = s.group(0)
-
-        color = ''
-
-        if s == ')' or s == '(':
-            color = 'LIGHTBLUE'
-        elif s == '/' or s == '+' or s == '-':
-            color = 'MAGENTA'
-        else:
-            # will be numbers
-            color = 'GREEN'
-
-        return f'#{color}#{s}%'
-
     def cmd_print(self, *args):
         size = self.interpolator.size()
 
@@ -366,6 +343,28 @@ class InterpolatorCommandHandler:
         """Wrapper around lib/colors::color_print, which will only print colors if the config is set on"""
         color_print(*args, color=self.config['show-colors'][1])
 
+    @staticmethod
+    def _color_interpolation_string_handler(s):
+        """
+
+        :param s: interpolation string regex match
+        :type s: Match
+        :return: colored interpolation string
+        :rtype: str
+        """
+        s = s.group(0)
+
+        color = ''
+
+        if s == ')' or s == '(':
+            color = 'LIGHTBLUE'
+        elif s == '/' or s == '+' or s == '-':
+            color = 'MAGENTA'
+        else:
+            # will be numbers
+            color = 'GREEN'
+
+        return f'#{color}#{s}%'
 
 def print_welcome_message():
     color_print(r"""
