@@ -171,7 +171,7 @@ class InterpolatorCommandHandler:
 		size = self.interpolator.size()
 
 		if size:
-			interpolation_string = re_sub(r'[0-9]+|[\-\+\/\(\)x]',
+			interpolation_string = re_sub(r'[0-9]+|[\-+/()x]',
 				InterpolatorCommandHandler._color_interpolation_string_handler, str(self.interpolator))
 
 			self.__print(f'#LIGHTBLUE#P#GREEN#{self.interpolator.size() - 1}#LIGHTBLUE#(x) =% {interpolation_string}')
@@ -187,7 +187,7 @@ class InterpolatorCommandHandler:
 				self.ans = result
 				return x, result
 			except:
-				self.__print(f'#RED#[ERROR]% Error in evaluating value #GREEN#x = {args[0]}%')
+				self.__print(f'#RED#[ERROR]% Error in evaluating value #GREEN#x = {x}%')
 				return None, None
 		else:
 			self.__print('#RED#[ERROR]% there is no data points to build the interpolation function')
