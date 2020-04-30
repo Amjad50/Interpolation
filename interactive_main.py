@@ -1,15 +1,18 @@
-from lib.interpolate import Interpolator
 from fractions import Fraction
-from time import process_time_ns as time
-from lib.colors import color_format, color_print, supports_color
+from math import ceil, floor
 from re import sub as re_sub
 from subprocess import call as call_system_cmd
-from math import ceil, floor
+from time import process_time_ns as time
+
+from lib.colors import color_format, color_print, supports_color
+from lib.interpolate import Interpolator
 
 try:
     import readline
 except ImportError:
-    color_print("#YELLOW#[WARN]% This system does not support auto completion and history functionality, as it does not have readline library.")
+    color_print(
+        "#YELLOW#[WARN]% This system does not support auto completion and history functionality, as it does not have readline library.")
+    readline = None
 
 
 class InterpolatorCommandHandler:
@@ -17,13 +20,15 @@ class InterpolatorCommandHandler:
     BREAK = 129
 
     def __init__(self):
+        # command_name : (command_function, command_help_message)
         self.commands_map = {
             'help': (self.cmd_help, "Print the help messages and shows the commands that can be used"),
             'add': (self.cmd_add_point, "Adds x, y value to the interpolation"),
             'addall': (self.cmd_add_all, "(addall [x0] [y0]...[xn] [yn]) Adds many points in one go"),
             'addfile': (self.cmd_add_file, "(addfile <filename>) Adds many points in one go from the file"),
             'savefile': (
-            self.cmd_save_file, "(savefile <filename>) saves the current points stored in the interpolator to a file"),
+                self.cmd_save_file,
+                "(savefile <filename>) saves the current points stored in the interpolator to a file"),
             'points': (self.cmd_print_points, "print the data points used in the current interpolation"),
             'print': (self.cmd_print, "Print the interpolation function"),
             'compute': (self.cmd_compute, "Input value x into the function and get the result"),
@@ -38,8 +43,11 @@ class InterpolatorCommandHandler:
             'exit': (self.cmd_exit, "Exit from this program"),
         }
 
+        # return the length of the longest command
+        # used for formatting later
         self.__max_length_cmd = max(map(len, self.commands_map))
 
+        # convert to bool
         def __set_boolean_helper(x):
             return False if x.lower() == 'false' or (len(x) and x.lower()[0] == 'f') else bool(x)
 
@@ -55,9 +63,12 @@ class InterpolatorCommandHandler:
                 x = x[1:-1]
             return x + '%'  # reset the colors if the user didn't do it
 
+        # config_name: [config_setter_handler, config_current_data]
         self.config = {
             # not the best way to know if the value is false or not, but mah.
             'show-time': [__set_boolean_helper, False],
+            # __set_show_colors is called from here to handle if the system does not support coloring
+            # from the beginning
             'show-colors': [__set_show_colors, __set_show_colors('True')],
             'prompt': [__set_prompt, '>>>'],
         }
@@ -78,6 +89,8 @@ class InterpolatorCommandHandler:
             possible_cmds = self.get_matched_commands(text)
             possible_cmds.append(None)
             return possible_cmds[state]
+        # if the command config is in the beginning
+        # Note: this does not work if the user typed part of the command, which is a feature in this program
         elif readline.get_line_buffer().startswith('config') and start == len('config '):
             possible_configs = [c for c in self.config if c.startswith(text)]
             possible_configs.append(None)
@@ -87,7 +100,7 @@ class InterpolatorCommandHandler:
 
     def cmd_help(self, *args):
         # this format_string is to set an indentation for the commands and their help message,
-        # which depend on __max_length_cmd.
+        # which depend on __max_length_cmd
         format_string = '#MAGENTA#{:' + str(self.__max_length_cmd) + '}\t%#GREEN#{}%'
         self.__print('\n'.join([format_string.format(k, v[1]) for k, v in self.commands_map.items()]))
 
@@ -102,12 +115,13 @@ class InterpolatorCommandHandler:
             self.__print('#RED#[ERROR]% the input for #GREEN#add% is not correct')
 
     def cmd_add_all(self, *args):
-        l = len(args)
-        if l % 2 != 0:
-            l -= 1
+        args_len = len(args)
+        # if its odd, then ignore the last number
+        if args_len % 2 != 0:
+            args_len -= 1
             self.__print(f'#YELLOW#[WARN]% ignoring value #GREEN#x = {args[-1]}% as there is no #GREEN#y% value to it')
 
-        for i in range(l // 2):
+        for i in range(args_len // 2):
             self.cmd_add_point(args[i * 2], args[(i * 2) + 1])
 
     def cmd_add_file(self, *args):
@@ -132,6 +146,7 @@ class InterpolatorCommandHandler:
             except FileNotFoundError:
                 self.__print(f"#RED#[ERROR]% The file #GREEN#{filename}% does not exist.")
             except:
+                # TODO: remove this general exception and handle all file exceptions
                 self.__print(f"#RED#$[PANIC]% unknown error occurred in #MAGENTA#addfile% command, please fix.")
 
     def cmd_save_file(self, *args):
@@ -146,11 +161,11 @@ class InterpolatorCommandHandler:
                             print(f'{point[0]} {point[1]}', file=f)
 
                     self.__print(f'$#LIGHTBLUE#[*]% points saved to #MAGENTA#{filename}% successfully')
-
                 except PermissionError:
                     self.__print(
                         f"#RED#[ERROR]% The file #GREEN#{filename}% could not be written to due to insufficient permissions that the current user have.")
                 except:
+                    # TODO: remove this general exception and handle all file exceptions
                     self.__print(f"#RED#$[PANIC]% unknown error occurred in #MAGENTA#addfile% command, please fix.")
             else:
                 self.__print('#YELLOW#[WARN]% No data points, nothing to print...')
@@ -164,6 +179,13 @@ class InterpolatorCommandHandler:
 
     @staticmethod
     def _color_interpolation_string_handler(s):
+        """
+
+        :param s: interpolation string regex match
+        :type s: Match
+        :return: colored interpolation string
+        :rtype: str
+        """
         s = s.group(0)
 
         color = ''
@@ -173,6 +195,7 @@ class InterpolatorCommandHandler:
         elif s == '/' or s == '+' or s == '-':
             color = 'MAGENTA'
         else:
+            # will be numbers
             color = 'GREEN'
 
         return f'#{color}#{s}%'
@@ -190,6 +213,15 @@ class InterpolatorCommandHandler:
             self.__print('#YELLOW#[WARN]% No data points, nothing to print...')
 
     def __inner_compute(self, x):
+        """is a small function handler to remove redundency
+
+        This piece of code is used in cmd_compute, cmd_compute_location, cmd_approx_ans
+
+        :param x: the value of x to be computed (mostly it will be a string)
+        :type x: Any
+        :return: the value of x as Fraction, and the result of the computation as a fraction as well
+        :rtype: Tuple[Fraction, Fraction]
+        """
         size = self.interpolator.size()
         if size:
             try:
@@ -250,12 +282,15 @@ class InterpolatorCommandHandler:
                 '#RED#[ERROR]% There is no value for #MAGENTA#ans% yet, you can get a value for #MAGENTA#ans% by #GREEN#compute%')
 
     def cmd_approx_ans(self, *args):
+        # TODO: add a precision change config
+        # TODO: change this function's name as it can compute by itself now
         size = self.interpolator.size()
         if args:
             x, result = self.__inner_compute(args[0])
             if x and result:
                 self.__print(f'#MAGENTA#ans =% #LIGHTBLUE#P{size - 1}(#GREEN#{x}%#LIGHTBLUE#) =% {float(result):.5f}')
         else:
+            # if ans is defined in this class (meaning it has been computed)
             if 'ans' in dir(self):
                 self.__print(f'#MAGENTA#ans =% {float(self.ans):.5f}')
             else:
@@ -283,11 +318,14 @@ class InterpolatorCommandHandler:
             except:
                 self.__print('#RED#[ERROR]% wrong format for setting config values')
         else:
+            # print all config
             self.__print('\n'.join([f'#GREEN#{k} = #MAGENTA#{repr(v[1])}%' for k, v in self.config.items()]))
 
     def cmd_clear(self, *args):
         self.__print('$#LIGHTBLUE#[*] clearing...%')
+        # assign a new Interpolator and the old one will be gone
         self.interpolator = Interpolator()
+        # if ans is defined, remove it
         if 'ans' in dir(self):
             del self.ans
 
@@ -326,10 +364,11 @@ class InterpolatorCommandHandler:
         return f"{self.config['prompt'][1]} "
 
     def __print(self, *args):
+        """Wrapper around lib/colors::color_print, which will only print colors if the config is set on"""
         color_print(*args, color=self.config['show-colors'][1])
 
 
-def welcome_message():
+def print_welcome_message():
     color_print(r"""
 #GREEN#Welcome to The%#LIGHTBLUE#
  ______          __                                  ___             __
@@ -347,8 +386,10 @@ def welcome_message():
 
 def main():
     cmd = InterpolatorCommandHandler()
-    welcome_message()
+    print_welcome_message()
 
+    # setup the readline library for auto-completion
+    # this library is from gnu readline
     if readline:
         readline.parse_and_bind('tab: complete')
         readline.set_completer(cmd.command_completer)
@@ -363,14 +404,20 @@ def main():
 
             command = command.lstrip()
 
+            # adding '!' at the beginning of the command, will run it in the shell
+            # though this shell is a child process, so changing directory or something like that
+            # which changes the environment of the executable will not be passed back to the parent process
+            # which is this one, so cd command does not work.
             if command[0] == '!':
                 call_system_cmd(command[1:], shell=True)
                 continue
 
+            # let the command handler handle the command, and stop if you are told to do so
             if cmd.run_command(command) == cmd.BREAK:
                 break
             print()
         except EOFError:
+            # this will handle ^D (Ctrl-D) press, which would prompt the user to exit
             print()
             while True:
                 response = input("Do you want to exit ([y]/n)? ").strip()
@@ -384,6 +431,8 @@ def main():
                         continue
                 break
         except KeyboardInterrupt:
+            # this will handle ^C (Ctrl-C) press which would ignore this line and go to the next line.
+            # .. not sure if readline library handle this action, but I think its good for windows as well.
             print()
 
 
