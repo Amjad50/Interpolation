@@ -11,8 +11,6 @@ class Interpolator:
         self.x_data = []
         self.y_data = []
         self.c_data = []
-        self.min = 0
-        self.max = 0
 
         if algorithm == Interpolator.MODES[1]:
             self.in_c_data = []
@@ -68,11 +66,6 @@ class Interpolator:
             raise ArithmeticError(f"this value of x ({x}) already exists")
         self.x_data.append(x)
         self.y_data.append(y)
-
-        if x > self.max:
-            self.max = x
-        if x < self.min:
-            self.min = x
 
     def size(self):
         return len(self.x_data)
