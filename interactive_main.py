@@ -20,7 +20,7 @@ decimal_context = getcontext()
 
 
 def fraction_to_decimal(x):
-    assert x is Fraction, "x argument must be of type Fraction"
+    assert isinstance(x, Fraction), "x argument must be of type Fraction"
 
     # there is no direct conversion from Fraction to Decimal
     return Decimal(x.numerator) / Decimal(x.denominator)
@@ -241,7 +241,7 @@ class InterpolatorCommandHandler:
         size = self.interpolator.size()
         if args:
             x, result = self.__inner_compute(args[0])
-            if x and result:
+            if x is not None:
                 self.__print(f'#MAGENTA#ans =% #LIGHTBLUE#P{size - 1}(#GREEN#{x}%#LIGHTBLUE#) =% {result}')
         else:
             self.__print('#RED#[ERROR]% no value #GREEN#x% specified')
@@ -265,7 +265,7 @@ class InterpolatorCommandHandler:
                     x = x_points[floor(inp)] + offset
 
                     x, result = self.__inner_compute(x)
-                    if x and result:
+                    if x is not None:
                         self.__print(f'#MAGENTA#ans =% #LIGHTBLUE#P{size - 1}(#GREEN#{x}%#LIGHTBLUE#) =% {result}')
                 else:
                     self.__print(
@@ -287,7 +287,8 @@ class InterpolatorCommandHandler:
         size = self.interpolator.size()
         if args:
             x, result = self.__inner_compute(args[0])
-            if x and result:
+
+            if x is not None:
                 decimal_result = fraction_to_decimal(result)
                 self.__print(f'#MAGENTA#ans =% #LIGHTBLUE#P{size - 1}(#GREEN#{x}%#LIGHTBLUE#) =% {decimal_result}')
         else:
