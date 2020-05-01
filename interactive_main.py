@@ -394,6 +394,7 @@ class InterpolatorCommandHandler:
 
         return f'#{color}#{s}%'
 
+
 def print_welcome_message():
     color_print(r"""
 #GREEN#Welcome to The%#LIGHTBLUE#
