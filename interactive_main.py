@@ -283,7 +283,6 @@ class InterpolatorCommandHandler:
                 '#RED#[ERROR]% There is no value for #MAGENTA#ans% yet, you can get a value for #MAGENTA#ans% by #GREEN#compute%')
 
     def cmd_approx(self, *args):
-        # TODO: add a precision change config
         size = self.interpolator.size()
         if args:
             x, result = self.__inner_compute(args[0])

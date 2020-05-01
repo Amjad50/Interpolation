@@ -107,7 +107,6 @@ class Interpolator:
         :type y: Fraction
         :rtype: None
         """
-        # TODO: x_differences is computed internally in compute(), change that for more efficiency
         old_computed, x_differences = self.__compute(x)
         self.c_data.append((y - old_computed) / x_differences)
 
