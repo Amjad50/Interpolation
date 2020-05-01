@@ -1,4 +1,5 @@
 from fractions import Fraction
+from decimal import getcontext, Decimal
 from math import ceil, floor
 from re import sub as re_sub
 from subprocess import call as call_system_cmd
@@ -13,6 +14,16 @@ except ImportError:
     color_print(
         "#YELLOW#[WARN]% This system does not support auto completion and history functionality, as it does not have readline library.")
     readline = None
+
+
+decimal_context = getcontext()
+
+
+def fraction_to_decimal(x):
+    assert x is Fraction, "x argument must be of type Fraction"
+
+    # there is no direct conversion from Fraction to Decimal
+    return Decimal(x.numerator) / Decimal(x.denominator)
 
 
 class InterpolatorCommandHandler:
@@ -63,6 +74,18 @@ class InterpolatorCommandHandler:
                 x = x[1:-1]
             return x + '%'  # reset the colors if the user didn't do it
 
+        def __set_precision(x):
+            try:
+                x = int(x)
+                # apply the precision in the decimal context
+                decimal_context.prec = x
+                return x
+            except ValueError:
+                self.__print("#RED#[ERROR]% the value of precision must be an integer.")
+                # TODO: change this to not depend on 'precision', now this is for fallback if
+                # an error occurred.
+                return self.config['precision'][1]
+
         # config_name: [config_setter_handler, config_current_data]
         self.config = {
             # not the best way to know if the value is false or not, but mah.
@@ -71,6 +94,7 @@ class InterpolatorCommandHandler:
             # from the beginning
             'show-colors': [__set_show_colors, __set_show_colors('True')],
             'prompt': [__set_prompt, '>>>'],
+            'precision': [__set_precision, __set_precision(6)],
         }
 
         self.interpolator = Interpolator()
@@ -264,11 +288,13 @@ class InterpolatorCommandHandler:
         if args:
             x, result = self.__inner_compute(args[0])
             if x and result:
-                self.__print(f'#MAGENTA#ans =% #LIGHTBLUE#P{size - 1}(#GREEN#{x}%#LIGHTBLUE#) =% {float(result):.5f}')
+                decimal_result = fraction_to_decimal(result)
+                self.__print(f'#MAGENTA#ans =% #LIGHTBLUE#P{size - 1}(#GREEN#{x}%#LIGHTBLUE#) =% {decimal_result}')
         else:
             # if ans is defined in this class (meaning it has been computed)
             if 'ans' in dir(self):
-                self.__print(f'#MAGENTA#ans =% {float(self.ans):.5f}')
+                decimal_ans = fraction_to_decimal(self.ans)
+                self.__print(f'#MAGENTA#ans =% {decimal_ans}')
             else:
                 self.__print(
                     '#RED#[ERROR]% There is no value for #MAGENTA#ans% yet, you can get a value for #MAGENTA#ans% by #GREEN#compute%')
@@ -327,6 +353,7 @@ class InterpolatorCommandHandler:
             if start_t != -1 and command != 'exit':
                 end_t = time()
                 self.__print(
+                    # TODO: should we use the decimal context precision config for this???
                     f'\n#LIGHTBLUE#[-] took $#GREEN#{(end_t - start_t) / 1000000:.5f}% #LIGHTBLUE#milliseconds%')
 
             return ret_val
