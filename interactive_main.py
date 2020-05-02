@@ -33,24 +33,23 @@ class InterpolatorCommandHandler:
     def __init__(self):
         # command_name : (command_function, command_help_message)
         self.commands_map = {
-            'help': (self.cmd_help, "Print the help messages and shows the commands that can be used"),
-            'add': (self.cmd_add_point, "Adds x, y value to the interpolation"),
-            'addall': (self.cmd_add_all, "(addall [x0] [y0]...[xn] [yn]) Adds many points in one go"),
-            'addfile': (self.cmd_add_file, "(addfile <filename>) Adds many points in one go from the file"),
+            'help': (self.cmd_help, "Print this help message"),
+            'add': (self.cmd_add, "(add [x0] [y0]...[xn] [yn]) Add multiple points"),
+            'addfile': (self.cmd_add_file, "(addfile <filename>) Add points stored in the file, a pair in each line"),
             'savefile': (
                 self.cmd_save_file,
-                "(savefile <filename>) saves the current points stored in the interpolator to a file"),
-            'points': (self.cmd_print_points, "print the data points used in the current interpolation"),
+                "(savefile <filename>) Save the current points stored in the interpolator to a file"),
+            'points': (self.cmd_print_points, "Print the data points used in the current interpolation"),
             'print': (self.cmd_print, "Print the interpolation function"),
-            'compute': (self.cmd_compute, "Input value x into the function and get the result"),
+            'compute': (self.cmd_compute, "Input value x into the interpolation function"),
             'comploc': (self.cmd_compute_location,
-                        "(compute_location) get the value of x at a relative location to the other points and compute its value from the interpolation"),
+                        "(compute_location) Get the value of x at a relative location to the other points and compute its value from the interpolation"),
             'ans': (self.cmd_print_ans, "Print the value of `ans` which is the last computed value"),
             'approx': (self.cmd_approx,
                        "Print the value of `ans` in decimal form (float) or compute a new value if specified as argument"),
             'config': (self.cmd_set_config,
-                       "Sets the value of one of the configuration, (key=value), to see the current config type `set` without parameters"),
-            'clear': (self.cmd_clear, "Clears the current interpolation"),
+                       "Set the value of one of the configuration, (key=value), to see the current config type `config` without parameters"),
+            'clear': (self.cmd_clear, "Clear the current interpolation"),
             'exit': (self.cmd_exit, "Exit from this program"),
         }
 
@@ -128,7 +127,7 @@ class InterpolatorCommandHandler:
         format_string = '#MAGENTA#{:' + str(self.__max_length_cmd) + '}\t%#GREEN#{}%'
         self.__print('\n'.join([format_string.format(k, v[1]) for k, v in self.commands_map.items()]))
 
-    def cmd_add_point(self, *args):
+    def __add_point(self, *args):
         try:
             x, y = map(lambda x: Fraction(x.strip()), args[:2])
             self.interpolator.add(x, y)
@@ -138,7 +137,7 @@ class InterpolatorCommandHandler:
         except ValueError:
             self.__print('#RED#[ERROR]% the input for #GREEN#add% is not correct')
 
-    def cmd_add_all(self, *args):
+    def cmd_add(self, *args):
         args_len = len(args)
         # if its odd, then ignore the last number
         if args_len % 2 != 0:
@@ -146,7 +145,7 @@ class InterpolatorCommandHandler:
             self.__print(f'#YELLOW#[WARN]% ignoring value #GREEN#x = {args[-1]}% as there is no #GREEN#y% value to it')
 
         for i in range(args_len // 2):
-            self.cmd_add_point(args[i * 2], args[(i * 2) + 1])
+            self.__add_point(args[i * 2], args[(i * 2) + 1])
 
     def cmd_add_file(self, *args):
         if len(args) < 1:
@@ -163,7 +162,7 @@ class InterpolatorCommandHandler:
                                 self.__print(
                                     f'#YELLOW#[WARN]% ignoring value #GREEN#x = {line_splitted[0]}% as there is no #GREEN#y% value to it')
                             else:
-                                self.cmd_add_point(*line_splitted[:2])
+                                self.__add_point(*line_splitted[:2])
             except PermissionError:
                 self.__print(
                     f"#RED#[ERROR]% The file #GREEN#{filename}% could not be read due to insufficient permissions that the current user have.")
