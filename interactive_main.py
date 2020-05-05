@@ -168,6 +168,8 @@ class InterpolatorCommandHandler:
                     f"#RED#[ERROR]% The file #GREEN#{filename}% could not be read due to insufficient permissions that the current user have.")
             except FileNotFoundError:
                 self.__print(f"#RED#[ERROR]% The file #GREEN#{filename}% does not exist.")
+            except IsADirectoryError:
+                self.__print(f"#RED#[ERROR]% #GREEN#{filename}% is a folder/directory, please specify a file.")
             except:
                 # TODO: remove this general exception and handle all file exceptions
                 self.__print(f"#RED#$[PANIC]% unknown error occurred in #MAGENTA#addfile% command, please fix.")
@@ -187,11 +189,13 @@ class InterpolatorCommandHandler:
                 except PermissionError:
                     self.__print(
                         f"#RED#[ERROR]% The file #GREEN#{filename}% could not be written to due to insufficient permissions that the current user have.")
+                except IsADirectoryError:
+                    self.__print(f"#RED#[ERROR]% #GREEN#{filename}% is a folder/directory, please specify a file.")
                 except:
                     # TODO: remove this general exception and handle all file exceptions
-                    self.__print(f"#RED#$[PANIC]% unknown error occurred in #MAGENTA#addfile% command, please fix.")
+                    self.__print(f"#RED#$[PANIC]% unknown error occurred in #MAGENTA#savefile% command, please fix.")
             else:
-                self.__print('#YELLOW#[WARN]% No data points, nothing to print...')
+                self.__print('#YELLOW#[WARN]% No data points, nothing to save...')
 
     def cmd_print_points(self, *args):
         if self.interpolator.size():
