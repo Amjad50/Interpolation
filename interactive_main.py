@@ -159,8 +159,16 @@ class InterpolatorCommandHandler:
                         if stripped_line:
                             line_splitted = stripped_line.split()
                             if len(line_splitted) < 2:
-                                self.__print(
-                                    f'#YELLOW#[WARN]% ignoring value #GREEN#x = {line_splitted[0]}% as there is no #GREEN#y% value to it')
+                                # FIXME: make the code better.
+                                # use commas if we can't use spaces
+                                line_splitted = stripped_line.split(',')
+
+                                if len(line_splitted) < 2:
+                                    self.__print(
+                                        f'#YELLOW#[WARN]% ignoring value #GREEN#x = {line_splitted[0]}% as there is no #GREEN#y% value to it')
+                                else:
+                                    self.__add_point(*line_splitted[:2])
+
                             else:
                                 self.__add_point(*line_splitted[:2])
             except PermissionError:
