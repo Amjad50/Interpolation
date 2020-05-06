@@ -277,7 +277,7 @@ class InterpolatorCommandHandler:
 
                     x, result = self.__inner_compute(x)
                     if x is not None:
-                        self.__print(f'#MAGENTA#ans =% #LIGHTBLUE#P{size - 1}(#GREEN#{x}%#LIGHTBLUE#) =% {result}')
+                        self.__print(f'#MAGENTA#ans =% #LIGHTBLUE#P{size - 1}(#GREEN#{x}%#LIGHTBLUE#) =% #LIGHTBLUE#P{size - 1}(#GREEN#{fraction_to_decimal(x)}%#LIGHTBLUE#) =% {result}')
                 else:
                     self.__print(
                         f'#RED#[ERROR]% the value location #GREEN#{inp}% you are trying to compute does not exist')
